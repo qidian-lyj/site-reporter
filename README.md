@@ -1,5 +1,7 @@
 # Site Reporter — Reporting App for Large Outdoor Sites
 
+![CI](https://github.com/qidian-lyj/site-reporter/actions/workflows/ci.yml/badge.svg)
+
 An **offline-first React PWA** for recording and reporting field observations on large
 outdoor sites — countryside, city, airport, campus, parks, road/rail/utility networks
 or large industrial sites. Use it to record wildlife sightings, fly-tipping, faults &

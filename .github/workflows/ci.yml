@@ -1,0 +1,44 @@
+# CI pipeline: build the React PWA and smoke-test the Express API on every push.
+# This is the "DevOps capabilities" practice from Week 8 of the module.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # allow manual runs from the Actions tab
+
+jobs:
+  build-and-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install front-end dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build the PWA
+        working-directory: app
+        run: npm run build
+
+      - name: Install server dependencies
+        run: npm ci --omit=dev
+
+      - name: Boot the API and check /api/health
+        run: |
+          node server/server.js &
+          SERVER_PID=$!
+          sleep 4
+          curl -sf http://localhost:3000/api/health | grep -q '"ok":true'
+          kill $SERVER_PID
