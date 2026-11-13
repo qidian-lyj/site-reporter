@@ -131,8 +131,19 @@ Device APIs need a **secure context** (`localhost` counts; plain HTTP over Wi-Fi
 
 ## Deployment (for the video demo / public URL)
 
-- **Front end → Vercel/Netlify:** build the `app/` project, deploy `app/dist`. Set
-  `VITE_API_BASE=https://<your-api-host>/api` at build time if the API lives elsewhere.
+**Live deployment:**
+
+- **Front end (PWA):** <https://site-reporter-seven.vercel.app> — Vercel, root
+  directory `app`, `VITE_API_BASE` injected at build time.
+- **Back end (API):** <https://site-reporter-api.onrender.com> — Render free tier.
+  Sleeps after ~15 min idle; the first request wakes it (~30–60 s), so hit
+  `/api/health` before starting a demo.
+
+**How it was deployed:**
+
+- **Front end → Vercel:** import the repo, set Root Directory to `app`, framework
+  preset Vite, and add the environment variable
+  `VITE_API_BASE=https://site-reporter-api.onrender.com/api` before deploying.
 - **Back end → Render/Railway/fly.io:** deploy this repo as a Node app
   (`npm install && npm start`). Set `CORS_ORIGIN=https://<your-app-host>` so only your
   front end may call the API, and `PORT` as provided by the host.
