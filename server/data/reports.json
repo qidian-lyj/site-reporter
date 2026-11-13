@@ -1,0 +1,48 @@
+[
+  {
+    "id": "demo-0001",
+    "title": "Roe deer seen limping on service road",
+    "category": "wildlife",
+    "description": "Young roe deer limping on the left hind leg, approx. 50 m from the north gate. Appears otherwise healthy; monitoring requested.",
+    "recipient": "ranger@site.example",
+    "photos": [],
+    "location": {
+      "latitude": 55.860916,
+      "longitude": -4.251421,
+      "accuracy": 11.5,
+      "altitude": null,
+      "heading": 128,
+      "tilt": {
+        "angle": 4,
+        "direction": "up"
+      },
+      "timestamp": "2026-03-14T09:12:00.000Z"
+    },
+    "createdAt": "2026-03-14T09:12:00.000Z",
+    "updatedAt": "2026-03-14T09:12:00.000Z",
+    "syncStatus": "synced"
+  },
+  {
+    "id": "demo-0002",
+    "title": "Broken fence panel near gate 4",
+    "category": "fault",
+    "description": "Wooden fence panel snapped after the storm - livestock escape risk. Temporary barrier placed, repair requested.",
+    "recipient": "maintenance@site.example",
+    "photos": [],
+    "location": {
+      "latitude": 55.8622,
+      "longitude": -4.2489,
+      "accuracy": 8.2,
+      "altitude": null,
+      "heading": 302,
+      "tilt": {
+        "angle": 62,
+        "direction": "side"
+      },
+      "timestamp": "2026-03-15T14:40:00.000Z"
+    },
+    "createdAt": "2026-03-15T14:40:00.000Z",
+    "updatedAt": "2026-03-15T14:40:00.000Z",
+    "syncStatus": "synced"
+  }
+]
