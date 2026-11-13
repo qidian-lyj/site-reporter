@@ -1,0 +1,32 @@
+{
+  "name": "site-reporter",
+  "version": "1.0.0",
+  "description": "Reporting App for large outdoor sites: record wildlife, faults, fly-tipping and maintenance with GPS, camera, compass and accelerometer data. Offline-first with JSON server sync.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "node --watch server/server.js",
+    "app": "npm --prefix app run dev",
+    "build": "npm --prefix app run build",
+    "install:all": "npm install && npm --prefix app install"
+  },
+  "keywords": [
+    "react",
+    "pwa",
+    "vite",
+    "dexie",
+    "indexeddb",
+    "leaflet",
+    "geolocation",
+    "camera",
+    "deviceorientation",
+    "devicemotion",
+    "contacts-api",
+    "express"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.19.2"
+  }
+}
