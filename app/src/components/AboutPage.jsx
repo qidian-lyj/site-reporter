@@ -21,7 +21,7 @@ export default function AboutPage() {
         <li>🧭 <strong>Compass API</strong> — camera orientation as well as location</li>
         <li>📐 <strong>Accelerometer API</strong> — camera pointing vertically up or down</li>
         <li>💾 Full in-app <strong>CRUD</strong> (IndexedDB via Dexie, works offline)</li>
-        <li>🗺️ <strong>Leaflet map</strong> of all located reports</li>
+        <li>🗺️ <strong>Leaflet map</strong> — visited tile areas cached for offline use</li>
         <li>🌐 <strong>Upload / download / sync</strong> — auto-syncs on reconnect</li>
         <li>📱 Installable <strong>PWA</strong> (manifest + service worker)</li>
       </ul>

@@ -32,7 +32,7 @@ recorded delivery.
 | Upload to server — simple dumb storage/retrieval, JSON | `app/src/services/sync.js` (`uploadAll` / `downloadAll`) + `server/store.js` (JSON file) |
 | Synchronise with server (upload/download + CRUD) | `app/src/services/sync.js` — `syncNow()`: push local changes, pull server changes, last-write-wins merge |
 | Connection API — turn on/off internet connection | `app/src/hooks/useConnection.js` — online/offline badge in the header gates every sync action |
-| Extra: map of all reports | `app/src/components/MapView.jsx` — Leaflet + OpenStreetMap tiles |
+| Extra: map of all reports | `app/src/components/MapView.jsx` — Leaflet + OpenStreetMap tiles; visited tile areas are cached for offline use |
 | Extra: device storage quota display | `app/src/hooks/useStorageEstimate.js` — `navigator.storage.estimate()` shown in the Sync tab |
 
 ## Project structure

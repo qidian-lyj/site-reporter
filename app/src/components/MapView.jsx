@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
-import L from 'leaflet';
 import { useLiveQuery } from 'dexie-react-hooks';
+import L from 'leaflet';
 import { db } from '../services/db.js';
 import { getCategory } from '../services/categories.js';
+import { useConnection } from '../hooks/useConnection.js';
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
@@ -19,6 +20,7 @@ export default function MapView() {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef(null);
+  const { online } = useConnection();
 
   const reports = useLiveQuery(
     () => db.reports.filter((r) => r.syncStatus !== 'deleted').toArray(),
@@ -89,7 +91,15 @@ export default function MapView() {
         {withLocation} of {reports.length} report(s) have GPS positions.
         Capture a position in a report to see it appear here.
       </p>
-      <div ref={containerRef} className="map-container" />
+      <div className="map-holder">
+        {!online && (
+          <div className="map-offline-note" role="status">
+            Offline: base-map tiles need a connection — report pins still show from local
+            data, and previously visited areas remain cached.
+          </div>
+        )}
+        <div ref={containerRef} className="map-container" />
+      </div>
     </section>
   );
 }

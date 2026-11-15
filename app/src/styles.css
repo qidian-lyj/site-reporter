@@ -455,6 +455,25 @@ button.danger:hover:not(:disabled) {
 .detail-actions button { margin: 0; }
 
 /* ---------- Map ---------- */
+.map-holder { position: relative; }
+
+.map-offline-note {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 500; /* above Leaflet tiles, below the sticky header */
+  max-width: 92%;
+  padding: 8px 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--warning);
+  background: rgba(12, 27, 19, 0.88);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  text-align: center;
+}
+
 .map-container {
   height: 62vh;
   min-height: 340px;
