@@ -531,6 +531,33 @@ button.danger:hover:not(:disabled) {
 .feature-list { padding-left: 20px; }
 .feature-list li { margin: 7px 0; }
 
+/* ---------- Auto-sync toast ---------- */
+.autosync-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+  z-index: 1200;
+  max-width: min(92vw, 480px);
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--text);
+  box-shadow: var(--shadow), inset 0 0 0 1px var(--border-strong);
+}
+
+.autosync-toast.tone-ok {
+  color: #9be08a;
+  box-shadow: var(--shadow), inset 0 0 0 1px rgba(124, 201, 107, 0.5);
+}
+
+.autosync-toast.tone-err {
+  color: #eda092;
+  box-shadow: var(--shadow), inset 0 0 0 1px rgba(224, 108, 86, 0.5);
+}
+
 /* ---------- Empty state ---------- */
 .empty {
   text-align: center;

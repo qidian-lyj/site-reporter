@@ -204,6 +204,8 @@ Server data lives in `server/data/reports.json` — open it after an upload to s
 3. **Sync now** pushes flagged reports via `POST /api/sync` and pulls anything changed
    on the server since the last sync, merging with **last-write-wins** on `updatedAt`.
 4. The Sync tab badge shows how many reports are still waiting to be pushed.
+5. Going back online **auto-syncs** queued reports by itself (`online` event →
+   `syncNow`), with a toast confirming the result — manual sync stays available.
 
 ## Ideas for next steps
 
