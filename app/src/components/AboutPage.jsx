@@ -22,7 +22,7 @@ export default function AboutPage() {
         <li>📐 <strong>Accelerometer API</strong> — camera pointing vertically up or down</li>
         <li>💾 Full in-app <strong>CRUD</strong> (IndexedDB via Dexie, works offline)</li>
         <li>🗺️ <strong>Leaflet map</strong> of all located reports</li>
-        <li>🌐 <strong>Upload / download / sync</strong> with a JSON server demo</li>
+        <li>🌐 <strong>Upload / download / sync</strong> — auto-syncs on reconnect</li>
         <li>📱 Installable <strong>PWA</strong> (manifest + service worker)</li>
       </ul>
       <p className="report-meta">
