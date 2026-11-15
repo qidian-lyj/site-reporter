@@ -1,5 +1,12 @@
 import { getCategory } from '../services/categories.js';
 import { softDeleteReport } from '../services/db.js';
+import {
+  buildMailto,
+  buildSmsLink,
+  extractEmail,
+  extractPhone,
+  shareReport,
+} from '../services/contacts.js';
 
 /**
  * "Read" + entry point for Update/Delete of a single report.
@@ -9,6 +16,14 @@ import { softDeleteReport } from '../services/db.js';
 export default function ReportDetail({ report, onEdit, onBack }) {
   const cat = getCategory(report.category);
   const loc = report.location;
+  const email = extractEmail(report.recipient);
+  const phone = extractPhone(report.recipient);
+
+  function handleShare() {
+    // Web Share API (iOS Safari / Android Chrome): opens the native share
+    // sheet. Cancelling throws AbortError - safely ignored.
+    shareReport(report).catch(() => {});
+  }
 
   async function handleDelete() {
     if (!window.confirm('Delete this report? It disappears from the device now and is removed from the server on the next sync.')) return;
@@ -81,6 +96,21 @@ export default function ReportDetail({ report, onEdit, onBack }) {
       )}
 
       <div className="detail-actions">
+        {email && (
+          <a className="btn-as-button" href={buildMailto(report)}>
+            ✉️ Email report
+          </a>
+        )}
+        {phone && (
+          <a className="btn-as-button" href={buildSmsLink(report)}>
+            💬 Text report
+          </a>
+        )}
+        {'share' in navigator && (
+          <button type="button" onClick={handleShare}>
+            ↗ Share…
+          </button>
+        )}
         <button type="button" onClick={onEdit}>
           ✏️ Edit
         </button>

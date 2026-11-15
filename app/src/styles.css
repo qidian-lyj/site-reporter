@@ -572,3 +572,43 @@ button.danger:hover:not(:disabled) {
   font-size: 2.6rem;
   margin-bottom: 10px;
 }
+
+/* ---------- Recipient quick chips + hand-off action links ---------- */
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 10px; }
+
+.chip {
+  margin: 0;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 999px;
+  color: var(--text);
+  background: rgba(151, 188, 98, 0.12);
+  border: 1px solid var(--border-strong);
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--moss);
+  color: var(--moss);
+  background: rgba(151, 188, 98, 0.18);
+}
+
+/* anchors styled like buttons (mailto:/sms: hand-off) */
+a.btn-as-button {
+  display: inline-block;
+  text-decoration: none;
+  margin: 4px 6px 4px 0;
+  padding: 10px 15px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+}
+
+a.btn-as-button:hover {
+  border-color: var(--moss-dark);
+  background: var(--panel-3);
+}

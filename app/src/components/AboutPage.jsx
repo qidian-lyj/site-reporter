@@ -17,7 +17,7 @@ export default function AboutPage() {
         <li>📷 Photos via the <strong>Camera API</strong> + photo album (storage permitting)</li>
         <li>⌨️ Free <strong>text input</strong> (title &amp; description)</li>
         <li>🗂️ <strong>Category menu</strong> (species, fault type, maintenance status…)</li>
-        <li>✉️ Categories routed to different <strong>recipients (Contacts API)</strong></li>
+        <li>✉️ Categories routed to recipients — <strong>Contact Picker</strong> (Android) · <strong>email / text hand-off</strong> (iOS)</li>
         <li>🧭 <strong>Compass API</strong> — camera orientation as well as location</li>
         <li>📐 <strong>Accelerometer API</strong> — camera pointing vertically up or down</li>
         <li>💾 Full in-app <strong>CRUD</strong> (IndexedDB via Dexie, works offline)</li>

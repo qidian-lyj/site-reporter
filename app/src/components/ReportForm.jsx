@@ -3,7 +3,7 @@ import { db, uuid } from '../services/db.js';
 import { getPosition, toLocationObject } from '../services/geolocation.js';
 import { startCamera, stopCamera, captureFrame, filesToPhotos } from '../services/camera.js';
 import { useSensors, requestSensorsPermission } from '../hooks/useSensors.js';
-import { pickContact } from '../services/contacts.js';
+import { pickContact, getRecentRecipients, rememberRecipient } from '../services/contacts.js';
 import { CATEGORIES, getCategory } from '../services/categories.js';
 
 /**
@@ -31,18 +31,13 @@ export default function ReportForm({ editing = null, onDone }) {
   const albumRef = useRef(null);
 
   const cat = getCategory(category);
+  const recents = getRecentRecipients(); // one-tap re-use of recent recipients
 
   // Release the camera when the form unmounts (e.g. user navigates away).
   useEffect(() => () => stopCamera(videoRef.current), []);
 
   function updateCategory(id) {
-    setCategory(id);
-    // Keep the recipient hint in sync with the chosen category.
-    if (!recipient) {
-      const next = getCategory(id);
-      // placeholder is derived during render, nothing else to do here
-      void next;
-    }
+    setCategory(id); // the "use default recipient" chip is derived during render
   }
 
   async function handleCaptureLocation() {
@@ -116,13 +111,15 @@ export default function ReportForm({ editing = null, onDone }) {
   async function handleSubmit(e) {
     e.preventDefault();
     const now = new Date().toISOString(); // datetime stamp
+    const trimmedRecipient = recipient.trim();
+    if (trimmedRecipient) rememberRecipient(trimmedRecipient); // one-tap re-use next time
 
     await db.reports.put({
       id: editing?.id ?? uuid(),
       title: title.trim(),
       category,
       description: description.trim(),
-      recipient: recipient.trim(),
+      recipient: trimmedRecipient,
       photos,
       location,
       createdAt: editing?.createdAt ?? now,
@@ -258,6 +255,23 @@ export default function ReportForm({ editing = null, onDone }) {
               placeholder={cat?.recipientHint ? `e.g. ${cat.recipientHint}` : 'Name <email> or phone number'}
             />
           </label>
+
+          {/* One-tap recipients: the category default plus recently used ones.
+              This is the iOS-friendly path - no typing, no address book API. */}
+          {(cat?.recipientHint || recents.length > 0) && (
+            <div className="chip-row">
+              {cat?.recipientHint && (
+                <button type="button" className="chip" onClick={() => setRecipient(cat.recipientHint)}>
+                  Default · {cat.recipientHint}
+                </button>
+              )}
+              {recents.map((r) => (
+                <button key={r} type="button" className="chip" onClick={() => setRecipient(r)}>
+                  Recent · {r}
+                </button>
+              ))}
+            </div>
+          )}
         </fieldset>
 
         <div className="btn-row">
