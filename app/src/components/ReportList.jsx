@@ -16,7 +16,8 @@ export default function ReportList({ onOpen, onNew }) {
       db.reports
         .orderBy('createdAt')
         .reverse()
-        .filter((r) => filter === 'all' || r.category === filter)
+        // tombstones (syncStatus 'deleted') are hidden pending their sync
+        .filter((r) => r.syncStatus !== 'deleted' && (filter === 'all' || r.category === filter))
         .toArray(),
     [filter],
     []

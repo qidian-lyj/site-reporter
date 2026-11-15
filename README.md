@@ -190,7 +190,7 @@ since the last sync, `synced` → identical on device and server.
 | POST | `/api/reports` | Create a report |
 | PUT | `/api/reports/:id` | Update or create (upsert — used by "Upload all") |
 | DELETE | `/api/reports/:id` | Delete a report |
-| POST | `/api/sync` | Bulk push/pull: `{ changes: [...], since }` → `{ accepted, serverChanges, serverTime }` |
+| POST | `/api/sync` | Bulk push/pull: `{ changes: [...], since }` → `{ accepted, deletedIds, serverChanges, serverTime }` |
 | GET | `/api/health` | Health check `{ ok, time, reports }` |
 
 Server data lives in `server/data/reports.json` — open it after an upload to show the
@@ -203,14 +203,16 @@ Server data lives in `server/data/reports.json` — open it after an upload to s
 2. **Upload all / Download all** are the naive one-way demos requested by the brief.
 3. **Sync now** pushes flagged reports via `POST /api/sync` and pulls anything changed
    on the server since the last sync, merging with **last-write-wins** on `updatedAt`.
-4. The Sync tab badge shows how many reports are still waiting to be pushed.
-5. Going back online **auto-syncs** queued reports by itself (`online` event →
+4. **Deletions sync too (tombstones)**: deleting a report keeps a hidden local marker
+   (`syncStatus: 'deleted'`) so the change survives offline periods; the next sync asks
+   the server to drop its copy, and once acknowledged the local marker is wiped.
+5. The Sync tab badge shows how many reports are still waiting to be pushed.
+6. Going back online **auto-syncs** queued reports by itself (`online` event →
    `syncNow`), with a toast confirming the result — manual sync stays available.
 
 ## Ideas for next steps
 
 - Per-user accounts (login) and per-user data isolation on the server
-- Delete propagation in the sync engine (server-side delete on pull)
 - Search/filter by text; export/import reports as a JSON file
 - Field-level conflict merge instead of last-write-wins
 - Automated tests (Vitest for services/hooks, Supertest for the API) + GitHub Actions CI

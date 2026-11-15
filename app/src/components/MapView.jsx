@@ -20,7 +20,11 @@ export default function MapView() {
   const mapRef = useRef(null);
   const markersRef = useRef(null);
 
-  const reports = useLiveQuery(() => db.reports.toArray(), [], []);
+  const reports = useLiveQuery(
+    () => db.reports.filter((r) => r.syncStatus !== 'deleted').toArray(),
+    [],
+    []
+  );
 
   // Create the map once.
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { getCategory } from '../services/categories.js';
-import { deleteReport } from '../services/db.js';
+import { softDeleteReport } from '../services/db.js';
 
 /**
  * "Read" + entry point for Update/Delete of a single report.
@@ -11,8 +11,8 @@ export default function ReportDetail({ report, onEdit, onBack }) {
   const loc = report.location;
 
   async function handleDelete() {
-    if (!window.confirm('Delete this report from the device?')) return;
-    await deleteReport(report.id);
+    if (!window.confirm('Delete this report? It disappears from the device now and is removed from the server on the next sync.')) return;
+    await softDeleteReport(report.id); // tombstone: the sync engine takes it from here
     onBack();
   }
 

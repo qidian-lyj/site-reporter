@@ -11,7 +11,7 @@
  * returns.
  */
 
-import { db, allReports, getReport, saveReport, clearReports } from './db.js';
+import { db, allReports, getReport, saveReport, deleteReport, clearReports } from './db.js';
 import * as api from './api.js';
 
 const LAST_SYNC_KEY = 'site-reporter:lastSync';
@@ -28,11 +28,22 @@ export function isOnline() {
 export async function uploadAll(log = () => {}) {
   const local = await allReports();
   log(`Uploading ${local.length} report(s)…`);
+  let processed = 0;
   for (const report of local) {
-    await api.putReport(report.id, report);
+    if (report.syncStatus === 'deleted') {
+      // Tombstone: ask the server to drop its copy (404 = already gone, fine)
+      try {
+        await api.deleteReport(report.id);
+      } catch {
+        /* report was not on the server - nothing to remove */
+      }
+    } else {
+      await api.putReport(report.id, report);
+    }
+    processed += 1;
   }
-  log(`✔ Uploaded ${local.length} report(s) to the server.`);
-  return local.length;
+  log(`✔ Processed ${processed} report(s) (uploads + deletion requests).`);
+  return processed;
 }
 
 /** Dumb retrieval: replace the whole local store with the server's JSON. */
@@ -76,6 +87,15 @@ export async function syncNow(log = () => {}) {
       // Local copy is identical or newer - keep it and mark as synced.
       await saveReport({ ...existing, syncStatus: 'synced' });
     }
+  }
+
+  // Tombstones the server acknowledged -> wipe the local copies for good.
+  const deletedIds = result.deletedIds || [];
+  for (const id of deletedIds) {
+    await deleteReport(id);
+  }
+  if (deletedIds.length > 0) {
+    log(`Removed ${deletedIds.length} deleted report(s) on the server too.`);
   }
 
   localStorage.setItem(LAST_SYNC_KEY, result.serverTime);

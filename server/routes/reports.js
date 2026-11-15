@@ -75,15 +75,31 @@ router.delete('/reports/:id', (req, res) => {
 
 // POST /api/sync
 // Body: { changes: [report, ...], since?: "<ISO date>" }
-// Returns: { accepted: [ids], serverChanges: [reports], serverTime }
+// Returns: { accepted: [ids], deletedIds: [ids], serverChanges: [reports], serverTime }
 //
 // Conflict policy: last-write-wins on updatedAt. Reports unknown to the
 // server are created; if the client copy is older, the server keeps its own.
+// Deletion tombstones (changes with syncStatus === 'deleted') remove the
+// server copy instead - the acked ids come back as `deletedIds` so the
+// client can wipe its local tombstones.
 router.post('/sync', (req, res) => {
   const changes = Array.isArray(req.body && req.body.changes) ? req.body.changes : [];
   const accepted = [];
+  const deletedIds = [];
 
   for (const incoming of changes) {
+    if (
+      incoming &&
+      incoming.syncStatus === 'deleted' &&
+      typeof incoming.id === 'string' &&
+      incoming.id
+    ) {
+      store.remove(incoming.id); // idempotent: false if already gone
+      deletedIds.push(incoming.id);
+      accepted.push(incoming.id);
+      continue;
+    }
+
     const data = sanitise(incoming);
     if (!data.id) data.id = crypto.randomUUID();
     const existing = store.getById(data.id);
@@ -100,7 +116,7 @@ router.post('/sync', (req, res) => {
     serverChanges = serverChanges.filter((r) => r.updatedAt > req.body.since);
   }
 
-  res.json({ accepted, serverChanges, serverTime: new Date().toISOString() });
+  res.json({ accepted, deletedIds, serverChanges, serverTime: new Date().toISOString() });
 });
 
 module.exports = router;

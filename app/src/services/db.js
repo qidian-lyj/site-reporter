@@ -30,6 +30,23 @@ export const saveReport = (report) => db.reports.put(report);
 
 export const deleteReport = (id) => db.reports.delete(id);
 
+/**
+ * Soft-delete: keep a hidden local tombstone (syncStatus: 'deleted') so the
+ * change survives offline periods; the next sync asks the server to drop its
+ * copy and, once acknowledged, the tombstone itself is wiped.
+ */
+export async function softDeleteReport(id) {
+  const report = await getReport(id);
+  if (!report) return;
+  const now = new Date().toISOString();
+  await db.reports.put({
+    ...report,
+    syncStatus: 'deleted',
+    deletedAt: now,
+    updatedAt: now,
+  });
+}
+
 /** Wipe the local store (used by the "download all" sync demo). */
 export const clearReports = () => db.reports.clear();
 

@@ -23,7 +23,11 @@ export default function SyncPanel() {
   const [log, setLog] = useState([]);
   const [busy, setBusy] = useState(false);
 
-  const total = useLiveQuery(() => db.reports.count(), [], 0);
+  const total = useLiveQuery(
+    () => db.reports.filter((r) => r.syncStatus !== 'deleted').count(),
+    [],
+    0
+  );
   const pending = useLiveQuery(
     () => db.reports.filter((r) => r.syncStatus !== 'synced').count(),
     [],
