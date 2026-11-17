@@ -11,7 +11,7 @@
  *  - OpenStreetMap tiles: cache-first in a separate, size-capped cache so
  *    previously visited map areas stay available offline ("offline map").
  */
-const CACHE_NAME = 'site-reporter-v3';
+const CACHE_NAME = 'site-reporter-v4';
 const TILE_PREFIX = 'site-reporter-tiles-';
 const TILE_CACHE = TILE_PREFIX + 'v1';
 const TILE_CACHE_MAX = 600; // ~600 tiles ≈ 10-20 MB, keeps storage reasonable
