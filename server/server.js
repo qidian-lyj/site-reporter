@@ -17,8 +17,6 @@ const reportsRouter = require('./routes/reports');
 const app = express();
 const DIST_DIR = path.join(__dirname, '..', 'app', 'dist');
 
-store.load(); // read server/data/reports.json into memory
-
 // Reports can embed base64 photos, so allow generous JSON bodies
 app.use(express.json({ limit: '30mb' }));
 
@@ -86,6 +84,7 @@ function listen(index) {
   const server = app.listen(port, () => {
     console.log(`Site Reporter server running:  http://localhost:${port}`);
     console.log(`API health check:               http://localhost:${port}/api/health`);
+    console.log(`Storage mode:                   ${store.storageMode()}`);
     if (!fs.existsSync(path.join(DIST_DIR, 'index.html'))) {
       console.warn('Note: app/dist not found - run "npm run build" to build the React front end.');
     }
@@ -100,4 +99,13 @@ function listen(index) {
   });
 }
 
-listen(0);
+// Initialise storage first (Upstash Redis in cloud mode, local file in dev),
+// then start listening.
+(async () => {
+  const info = await store.init();
+  console.log(`[store] mode: ${info.mode} — ${info.reports} report(s) loaded`);
+  listen(0);
+})().catch((err) => {
+  console.error('Startup failed:', err);
+  process.exit(1);
+});

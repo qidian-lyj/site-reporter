@@ -1,8 +1,7 @@
 /**
  * REST API for reports + the bulk sync endpoint.
  *
- * Data lives in a plain JSON file (server/data/reports.json) - the
- * "simple dumb storage" required by the brief. Mounted at /api by server.js:
+ * Mounted at /api by server.js:
  *
  *   GET    /api/reports          list all (optional ?since=<ISO date>)
  *   GET    /api/reports/:id      read one
@@ -10,12 +9,19 @@
  *   PUT    /api/reports/:id      update or create (upsert, used by "upload all")
  *   DELETE /api/reports/:id      delete
  *   POST   /api/sync             bulk push/pull used by the sync engine
+ *
+ * Storage: the store layer (server/store.js) — Upstash Redis in cloud
+ * deployments, a local JSON file in dev. Write handlers await store.save()
+ * so data is persisted before the response is sent.
  */
 const crypto = require('crypto');
 const express = require('express');
 const store = require('../store');
 
 const router = express.Router();
+
+/** Forward async errors to the central error middleware. */
+const ah = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 /** Pick only the fields the server understands (never trust the client blindly). */
 function sanitise(body = {}) {
@@ -47,31 +53,34 @@ router.get('/reports/:id', (req, res) => {
 });
 
 // POST /api/reports
-router.post('/reports', (req, res) => {
+router.post('/reports', ah(async (req, res) => {
   const data = sanitise(req.body);
   data.id = data.id || crypto.randomUUID();
   if (store.getById(data.id)) {
     return res.status(409).json({ error: 'A report with this id already exists - use PUT to update it.' });
   }
-  res.status(201).json(store.create(data));
-});
+  await store.save(store.create(data));
+  res.status(201).json(data);
+}));
 
 // PUT /api/reports/:id  (upsert, so the "dumb upload" demo can push everything)
-router.put('/reports/:id', (req, res) => {
+router.put('/reports/:id', ah(async (req, res) => {
   const data = sanitise({ ...req.body, id: req.params.id });
   const saved = store.getById(req.params.id)
     ? store.update(req.params.id, data)
     : store.create(data);
+  await store.save();
   res.json(saved);
-});
+}));
 
 // DELETE /api/reports/:id
-router.delete('/reports/:id', (req, res) => {
+router.delete('/reports/:id', ah(async (req, res) => {
   if (!store.remove(req.params.id)) {
     return res.status(404).json({ error: 'Report not found' });
   }
+  await store.save();
   res.status(204).end();
-});
+}));
 
 // POST /api/sync
 // Body: { changes: [report, ...], since?: "<ISO date>" }
@@ -82,7 +91,7 @@ router.delete('/reports/:id', (req, res) => {
 // Deletion tombstones (changes with syncStatus === 'deleted') remove the
 // server copy instead - the acked ids come back as `deletedIds` so the
 // client can wipe its local tombstones.
-router.post('/sync', (req, res) => {
+router.post('/sync', ah(async (req, res) => {
   const changes = Array.isArray(req.body && req.body.changes) ? req.body.changes : [];
   const accepted = [];
   const deletedIds = [];
@@ -116,7 +125,8 @@ router.post('/sync', (req, res) => {
     serverChanges = serverChanges.filter((r) => r.updatedAt > req.body.since);
   }
 
+  await store.save(); // persist everything this sync changed
   res.json({ accepted, deletedIds, serverChanges, serverTime: new Date().toISOString() });
-});
+}));
 
 module.exports = router;
